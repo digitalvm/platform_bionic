@@ -31,19 +31,20 @@
 #include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/auxv.h>
+#include <sys/mman.h>
 #include <sys/personality.h>
 #include <sys/time.h>
 #include <unistd.h>
 
 #include "private/bionic_auxv.h"
 #include "private/bionic_globals.h"
-#include "private/bionic_ssp.h"
 #include "private/bionic_tls.h"
 #include "private/KernelArgumentBlock.h"
 #include "private/libc_logging.h"
@@ -62,12 +63,19 @@ const char* __progname;
 char** environ;
 
 // Declared in "private/bionic_ssp.h".
-uintptr_t __stack_chk_guard = 0;
+__attribute__((aligned(PAGE_SIZE)))
+uintptr_t __stack_chk_guard[PAGE_SIZE / sizeof(uintptr_t)] = {0};
 
 void __libc_init_global_stack_chk_guard(KernelArgumentBlock& args) {
   // AT_RANDOM is a pointer to 16 bytes of randomness on the stack.
   // Take the first 4/8 for the -fstack-protector implementation.
-  __stack_chk_guard = *reinterpret_cast<uintptr_t*>(args.getauxval(AT_RANDOM));
+  if (mprotect(__stack_chk_guard, sizeof(__stack_chk_guard), PROT_READ|PROT_WRITE) == -1) {
+    __libc_fatal("mprotect __stack_chk_guard: %s", strerror(errno));
+  }
+  __stack_chk_guard[0] = *reinterpret_cast<uintptr_t*>(args.getauxval(AT_RANDOM));
+  if (mprotect(__stack_chk_guard, sizeof(__stack_chk_guard), PROT_READ) == -1) {
+    __libc_fatal("mprotect __stack_chk_guard: %s", strerror(errno));
+  }
 }
 
 #if defined(__i386__)
