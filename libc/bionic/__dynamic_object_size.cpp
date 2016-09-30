@@ -26,10 +26,22 @@
  * SUCH DAMAGE.
  */
 
+
+#undef _FORTIFY_SOURCE
+#undef __DISABLE_DYNAMIC_OBJECT_SIZE
 #include <stddef.h>
+#include <unistd.h>
+#include "private/libc_logging.h"
 
 extern "C" size_t __malloc_object_size(const void*);
 
 extern "C" size_t __dynamic_object_size(const void* ptr) {
   return __malloc_object_size(ptr);
+}
+
+extern "C" ssize_t read(int fd, void* buf, size_t count) {
+  if (count > __dynamic_object_size(buf)) {
+    __fortify_chk_fail("read: prevented write past end of buffer", 0);
+  }
+  return __unchecked_read(fd, buf, count);
 }

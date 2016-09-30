@@ -2,7 +2,7 @@
 
 #include <private/bionic_asm.h>
 
-ENTRY(read)
+ENTRY(__unchecked_read)
     .set noreorder
     .cpload t9
     li v0, __NR_read
@@ -16,4 +16,4 @@ ENTRY(read)
     j t9
     nop
     .set reorder
-END(read)
+END(__unchecked_read)

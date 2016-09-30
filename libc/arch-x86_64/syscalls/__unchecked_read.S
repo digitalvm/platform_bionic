@@ -2,7 +2,7 @@
 
 #include <private/bionic_asm.h>
 
-ENTRY(read)
+ENTRY(__unchecked_read)
     movl    $__NR_read, %eax
     syscall
     cmpq    $-MAX_ERRNO, %rax
@@ -12,4 +12,5 @@ ENTRY(read)
     call    __set_errno_internal
 1:
     ret
-END(read)
+END(__unchecked_read)
+.hidden __unchecked_read

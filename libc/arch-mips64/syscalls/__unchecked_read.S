@@ -2,7 +2,7 @@
 
 #include <private/bionic_asm.h>
 
-ENTRY(read)
+ENTRY(__unchecked_read)
     .set push
     .set noreorder
     li v0, __NR_read
@@ -22,4 +22,5 @@ ENTRY(read)
     j t9
     move ra, t0
     .set pop
-END(read)
+END(__unchecked_read)
+.hidden __unchecked_read

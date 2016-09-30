@@ -27,6 +27,7 @@ endif
 libc_crt_target_cflags := \
     -I$(LOCAL_PATH)/include \
     -DPLATFORM_SDK_VERSION=$(PLATFORM_SDK_VERSION) \
+    -D__DISABLE_DYNAMIC_OBJECT_SIZE
 
 my_2nd_arch_prefix :=
 include $(LOCAL_PATH)/crt.mk

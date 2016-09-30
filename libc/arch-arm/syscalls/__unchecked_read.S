@@ -2,7 +2,7 @@
 
 #include <private/bionic_asm.h>
 
-ENTRY(read)
+ENTRY(__unchecked_read)
     mov     ip, r7
     .cfi_register r7, ip
     ldr     r7, =__NR_read
@@ -13,4 +13,4 @@ ENTRY(read)
     bxls    lr
     neg     r0, r0
     b       __set_errno_internal
-END(read)
+END(__unchecked_read)

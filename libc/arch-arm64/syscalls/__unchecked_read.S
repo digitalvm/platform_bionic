@@ -2,7 +2,7 @@
 
 #include <private/bionic_asm.h>
 
-ENTRY(read)
+ENTRY(__unchecked_read)
     mov     x8, __NR_read
     svc     #0
 
@@ -11,4 +11,5 @@ ENTRY(read)
     b.hi    __set_errno_internal
 
     ret
-END(read)
+END(__unchecked_read)
+.hidden __unchecked_read

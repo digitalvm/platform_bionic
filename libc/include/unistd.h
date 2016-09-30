@@ -156,7 +156,12 @@ extern int sync(void);
 
 extern int close(int __fd);
 
+extern ssize_t __unchecked_read(int __fd, void* __buf, size_t __count);
+#if defined(__DISABLE_DYNAMIC_OBJECT_SIZE)
+#define read __unchecked_read
+#else
 extern ssize_t read(int __fd, void* __buf, size_t __count);
+#endif
 extern ssize_t write(int __fd, const void* __buf, size_t __count);
 
 extern int dup(int __oldfd);
