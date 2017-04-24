@@ -51,6 +51,7 @@
 #include "pthread_internal.h"
 
 extern "C" abort_msg_t** __abort_message_ptr;
+extern "C" void _malloc_init(int);
 extern "C" int __system_properties_init(void);
 
 __LIBC_HIDDEN__ WriteProtected<libc_globals> __libc_globals;
@@ -120,6 +121,8 @@ void __libc_init_common(KernelArgumentBlock& args) {
 
   // Register atfork handlers to take and release the arc4random lock.
   pthread_atfork(arc4random_fork_handler, _thread_arc4_unlock, _thread_arc4_unlock);
+
+  _malloc_init(1);
 
   __system_properties_init(); // Requires 'environ'.
 }
